@@ -1,12 +1,14 @@
 from collections import namedtuple
 import datetime
 import re
+import sys
 from typing import List, Optional, Tuple, Union
 
 from easydict import EasyDict
 import numpy as np
 import pandas as pd
 
+sys.path.append("..")
 from time_series_utils.window import Window
 
 
@@ -260,10 +262,11 @@ def create_binary_response(
     Returns:
     -------
     """
+
     if fractional_increase:
         response = f"response_{ndays}day_{fractional_increase * 100}percent"
         df[response] = np.where(
-            df["close"].shift(-ndays) / df["open"] - 1 >= fractional_increase, 1, 0
+            df["close"].shift(-ndays) / df["open"].shift(-1) - 1 >= fractional_increase, 1, 0
         )
     else:
         response = f"response_{ndays}"
