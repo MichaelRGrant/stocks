@@ -16,6 +16,7 @@ def load_time_series_data(
     model_df_path: str,
     response_horizon: int,
     seq_length: int,
+    subset_to_symbol: Optional[str]=None,
     horizon: int = 1,
     fractional_increase: float = 0.005,
     group_col: str = "symbol",
@@ -71,6 +72,8 @@ def load_time_series_data(
     """
 
     model_df = pd.read_feather(model_df_path)
+    if subset_to_symbol:
+        model_df = model_df.query("symbol == @subset_to_symbol")
 
     # add response
     model_df = model_df.groupby(group_col).progress_apply(
@@ -311,6 +314,9 @@ def series_to_supervised(
 ):
     """
     Frame a time series as a supervised learning dataset.
+    This source of this function is
+    https://machinelearningmastery.com/convert-time-series-supervised-learning-problem-python/code
+
     Parameters:
     -------
     data: Sequence of observations as a list or NumPy array.

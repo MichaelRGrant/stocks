@@ -31,7 +31,7 @@ def create_gru_model(
         model.add(
             tf.keras.layers.GRU(
                 unit,
-                activation="elu",
+                activation="tanh",
                 input_shape=(timesteps, features),
                 return_sequences=True if layer < layers - 1 else False,
             )

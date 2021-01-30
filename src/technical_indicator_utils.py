@@ -54,6 +54,8 @@ def add_all_technical_features(stock_df: pd.DataFrame) -> pd.DataFrame:
     """
     stock_df_augmented = (
         cci(stock_df, 20)
+        .pipe(macd)
+        .pipe(parabolic_sar)
         .pipe(evm, 20)
         .pipe(calculate_roc, 20)
         .pipe(bollinger_bands)
@@ -61,28 +63,28 @@ def add_all_technical_features(stock_df: pd.DataFrame) -> pd.DataFrame:
         .pipe(calculate_rsi)
         .pipe(calculate_stochastic)
         .pipe(add_on_balance_volume)
-        .pipe(sma, ["close"], [5, 10, 20])
-        .pipe(ema, ["close"], [5, 10, 20])
-        .pipe(dema, ["close"], [5, 10, 20])
-        .pipe(calc_crossover, ma_windows=[5, 10, 20])
-        #         .pipe(get_slopes, ndays=5, cols=["dema_close_5"])
+        .pipe(sma, ["close"], [5, 10, 20, 50])
+        .pipe(ema, ["close"], [5, 10, 20, 50])
+        .pipe(dema, ["close"], [5, 10, 20, 50])
+        .pipe(calc_crossover, ma_windows=[5, 10, 20, 50])
+#         .pipe(get_slopes, ndays=5, cols=["dema_close_5"])
     )
-    stock_df_augmented = ema(
-        stock_df_augmented,
-        [
-            col
-            for col in stock_df_augmented.columns
-            if re.search("cross_above|cross_below", col)
-        ],
-        [10, 20],
-    )
+#     stock_df_augmented = ema(
+#         stock_df_augmented,
+#         [
+#             col
+#             for col in stock_df_augmented.columns
+#             if re.search("cross_above|cross_below", col)
+#         ],
+#         [10, 20],
+#     )
 
     return stock_df_augmented
 
 
 def get_slopes(df: pd.DataFrame, ndays: int, cols: List[int]) -> pd.DataFrame:
     """
-    Using simple linear refression, calculate the slopes for the
+    Using simple linear regression to calculate the slopes for the
     number of `ndays` back for each column in `cols`.
     """
     lin_reg = LinearRegression()
